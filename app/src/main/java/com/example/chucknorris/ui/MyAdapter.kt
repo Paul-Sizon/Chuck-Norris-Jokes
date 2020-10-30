@@ -10,8 +10,15 @@ import com.example.chucknorris.network.Items
 import com.example.chucknorris.network.Post
 
 
-class MyAdapter(private val jokesList: List<Items>) :
+class MyAdapter() :
     RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+
+    private var jokesList: List<Items> = emptyList()
+
+    fun setNewList(newList: List<Items>) {
+        jokesList = newList
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(
@@ -25,12 +32,15 @@ class MyAdapter(private val jokesList: List<Items>) :
         val currentItem = jokesList[position]
 
         holder.jokeChuck.text = currentItem.joke
-
     }
 
     override fun getItemCount() = jokesList.size
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-       val jokeChuck: TextView = itemView.findViewById(R.id.joke_card)
+        val jokeChuck: TextView = itemView.findViewById(R.id.joke_card)
+
+        fun onBind(){
+
+        }
     }
 }

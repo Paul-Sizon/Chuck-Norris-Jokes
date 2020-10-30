@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chucknorris.R
+import com.example.chucknorris.databinding.FragmentJokesBinding
 import com.example.chucknorris.network.Items
 import com.example.chucknorris.network.retroApi
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 
 class JokesFragment : Fragment() {
 
+    private lateinit var fragmentBinding: FragmentJokesBinding
 
     private lateinit var adapter: MyAdapter
 
@@ -28,34 +30,33 @@ class JokesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_jokes, container, false)
-        val reloadButton = view.findViewById<Button>(R.id.reload_bt)
-        val number = view.findViewById<EditText>(R.id.count_et)
-
-
-
-        reloadButton.setOnClickListener {
-
-            //GlobalScope.launch (Dispatchers.Main)
-
-            lifecycleScope.launch {
-                val count: Int = number.text.toString().toInt()
-                val response = retroApi.api.getPost2(count)
-                val items: List<Items> = response.value
-
-                adapter = MyAdapter(items)
-                val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
-                recyclerView.adapter = adapter
-
-                reloadButton.visibility = View.GONE
-                number.visibility = View.GONE
-            }
-        }
-
-        return view
+        fragmentBinding = FragmentJokesBinding.inflate(inflater, container, false)
+        return fragmentBinding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        subscribeUi()
+    }
 
+    private fun subscribeUi() {
+        fragmentBinding.reloadBt.setOnClickListener {
+            reload()
+        }
+        adapter = MyAdapter()
+        fragmentBinding.recyclerView.adapter = adapter
+    }
+
+    private fun reload() {
+        lifecycleScope.launch {
+            val count: Int = fragmentBinding.countEt.text.toString().toInt()
+            val response = retroApi.api.getPost2(count)
+            val items: List<Items> = response.value
+            adapter.setNewList(items)
+            fragmentBinding.reloadBt.visibility = View.GONE
+            fragmentBinding.countEt.visibility = View.GONE
+        }
+    }
 }
 
 
