@@ -1,39 +1,46 @@
 package com.example.chucknorris.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.example.chucknorris.R
+import androidx.fragment.app.Fragment
+import com.example.chucknorris.databinding.FragmentWebBinding
 
 
 class WebFragment : Fragment() {
 
+    private lateinit var webView: WebView
+    private lateinit var fragmentBinding: FragmentWebBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        fragmentBinding = FragmentWebBinding.inflate(inflater, container, false)
 
-        val view = inflater.inflate(R.layout.fragment_web, container, false)
-
-        val webView = view.findViewById<WebView>(R.id.webview)
-        val webSetting: WebSettings = webView.settings
-        webSetting.builtInZoomControls = true
-        webSetting.javaScriptEnabled = true
+        webView = fragmentBinding.webview
         webView.webViewClient = WebViewClient()
-        val URL = "http://www.icndb.com/api"
+        val url = "http://www.icndb.com/api"
+        webView.loadUrl(url)
 
-
-        webView.loadUrl(URL)
-
-        return view
+        return fragmentBinding.root
     }
 
 
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        webView.saveState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            webView.restoreState(savedInstanceState)
+        }
+    }
 }
